@@ -1,8 +1,11 @@
 import java.util.Date;
 import java.util.List;
+import java.util.TreeMap;
 
 public class Assignment implements SubmissionHistory {
-	
+
+	private TreeMap<String, TreeMapPQ> bigMap;
+
 	/**
 	 * Default constructor
 	 */
