@@ -71,7 +71,7 @@ public class TestAssignmentVisible {
 	 * The example tests described in the assignment specification
 	 * **************************************************************** */
 
-	@Test(timeout = 100)
+	@Test//(timeout = 100)
 	public void testExample1() {
 		SubmissionHistory history = buildTinyExample();
 		// This will return an Integer corresponding to the number 86
@@ -79,7 +79,7 @@ public class TestAssignmentVisible {
 		assertEquals(new Integer(86), example1);
 	}
 
-	@Test(timeout = 100)
+	@Test//(timeout = 100)
 	public void testExample2() {
 		SubmissionHistory history = buildTinyExample();
 		// This will return null
@@ -87,7 +87,7 @@ public class TestAssignmentVisible {
 		assertNull(example2);
 	}
 
-	@Test(timeout = 100)
+	@Test//(timeout = 100)
 	public void testExample3() {
 		SubmissionHistory history = buildTinyExample();
 		// Tell JUnit to expect an IllegalArgumentException
@@ -96,7 +96,7 @@ public class TestAssignmentVisible {
 		history.getBestGrade(null);
 	}
 
-	@Test(timeout = 100)
+	@Test//(timeout = 100)
 	public void testExample4() {
 		SubmissionHistory history = buildTinyExample();
 		// This will return a Submission corresponding to submission D
@@ -104,7 +104,7 @@ public class TestAssignmentVisible {
 		testHelperEquals("aaaa1234", getDate("2016/09/03 18:00:00"), 40, example4);
 	}
 
-	@Test(timeout = 100)
+	@Test//(timeout = 100)
 	public void testExample5() {
 		SubmissionHistory history = buildTinyExample();
 		// This will return a Submission corresponding to submission C
@@ -112,7 +112,7 @@ public class TestAssignmentVisible {
 		testHelperEquals("cccc1234", getDate("2016/09/03 16:00:00"), 73, example5);
 	}
 
-	@Test(timeout = 100)
+	@Test//(timeout = 100)
 	public void testExample6() {
 		SubmissionHistory history = buildTinyExample();
 		// This will return a Submission corresponding to submission A
@@ -120,7 +120,7 @@ public class TestAssignmentVisible {
 		testHelperEquals("aaaa1234", getDate("2016/09/03 09:00:00"), 66, example6);
 	}
 
-	@Test(timeout = 100)
+	@Test//(timeout = 100)
 	public void testExample7() {
 		SubmissionHistory history = buildTinyExample();
 		// This will return null
@@ -128,7 +128,7 @@ public class TestAssignmentVisible {
 		assertNull(example7);
 	}
 
-	@Test(timeout = 100)
+	@Test//(timeout = 100)
 	public void testExample8() {
 		SubmissionHistory history = buildTinyExample();
 		// This will return a list containing only {"aaaa1234"}
@@ -139,7 +139,7 @@ public class TestAssignmentVisible {
 		assertEquals(expected, example8);
 	}
 
-	@Test(timeout = 100)
+	@Test//(timeout = 100)
 	public void testExample9() {
 		SubmissionHistory history = buildTinyExample();
 		// This will return a list containing only {"aaaa1234"}
@@ -155,7 +155,7 @@ public class TestAssignmentVisible {
 	 * **************************************************************** */
 
 	//what happens if you have a null argument to the add method
-	@Test(timeout = 100)
+	@Test//(timeout = 100)
 	public void testAddNull() {
 		SubmissionHistory history = new Assignment();
 
@@ -182,7 +182,7 @@ public class TestAssignmentVisible {
 	}
 
 	//what happens if you have a null argument to the remove method
-	@Test(timeout = 100)
+	@Test//(timeout = 100)
 	public void testRemoveNull() {
 		SubmissionHistory history = new Assignment();
 		thrown.expect(IllegalArgumentException.class);
@@ -190,7 +190,7 @@ public class TestAssignmentVisible {
 	}
 
 	//what happens if there are no submissions
-	@Test(timeout = 100)
+	@Test//(timeout = 100)
 	public void testListRegressions_EmptyHistory() {
 		SubmissionHistory history = new Assignment();
 		List<String> list = history.listRegressions();
@@ -198,7 +198,7 @@ public class TestAssignmentVisible {
 	}
 
 	//what happens if there are no submissions
-	@Test(timeout = 100)
+	@Test//(timeout = 100)
 	public void testListTopStudents_EmptyHistory() {
 		SubmissionHistory history = new Assignment();
 		List<String> list = history.listTopStudents();
@@ -206,7 +206,7 @@ public class TestAssignmentVisible {
 	}
 
 	//make sure the return value of the add method is correct
-	@Test(timeout = 100)
+	@Test//(timeout = 100)
 	public void testReturnValueOfAdd() {
 		SubmissionHistory history = new Assignment();
 		String unikey;
@@ -231,7 +231,7 @@ public class TestAssignmentVisible {
 	}
 
 	//does getSubmissionsBefore work correctly if the submissions were not added in order
-	@Test(timeout = 100)
+	@Test//(timeout = 100)
 	public void testGetBefore_AddUnsorted() {
 		SubmissionHistory history = new Assignment();
 		
@@ -245,7 +245,7 @@ public class TestAssignmentVisible {
 		Submission d = testHelperAdd(history, "aaaa1111", new Date(800000), 23);
 		Submission g = testHelperAdd(history, "bbbb1111", new Date(1400000), 40);
 		Submission i = testHelperAdd(history, "aaaa1111", new Date(1800000), 50);
-		
+
 		testHelperEquals(a, history.getSubmissionBefore("aaaa1111", new Date(300000)));
 		assertNull(history.getSubmissionBefore("bbbb1111", new Date(300000)));
 
@@ -279,7 +279,7 @@ public class TestAssignmentVisible {
 	}
 
 	//does getBestGrade work correctly if the submissions were not added in order
-	@Test(timeout = 100)
+	@Test//(timeout = 100)
 	public void testGetBest_AddUnsorted() {
 		SubmissionHistory history = new Assignment();
 		
@@ -325,7 +325,7 @@ public class TestAssignmentVisible {
 	}
 
 	//does getSubmissionFinal work correctly if the submissions were not added in order
-	@Test(timeout = 100)
+	@Test//(timeout = 100)
 	public void testGetFinal_AddUnsorted() {
 		SubmissionHistory history = new Assignment();
 		
@@ -371,7 +371,7 @@ public class TestAssignmentVisible {
 	}
 	
 	//does getBestSubmission work correctly as we remove submissions
-	@Test(timeout = 100)
+	@Test//(timeout = 100)
 	public void testGetBest_Remove() {
 		SubmissionHistory history = new Assignment();
 		Submission b = testHelperAdd(history, "aaaa1111", new Date(400000), 10);
@@ -435,7 +435,7 @@ public class TestAssignmentVisible {
 	}
 
 	//testing a larger example with the regressions method
-	@Test(timeout = 100)
+	@Test//(timeout = 100)
 	public void testMoreTopStudents() {
 		SubmissionHistory history = new Assignment();
 		Submission a1 = testHelperAdd(history, "a", new Date(100000), 10);
@@ -464,7 +464,7 @@ public class TestAssignmentVisible {
 	}
 	
 	//testing an unusually high grade
-	@Test(timeout = 100)
+	@Test//(timeout = 100)
 	public void testReallyHighGrade() {
 		SubmissionHistory history = new Assignment();
 		Submission a = testHelperAdd(history, "a", new Date(100000), 10);

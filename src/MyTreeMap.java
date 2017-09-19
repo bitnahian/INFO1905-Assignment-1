@@ -1,8 +1,8 @@
 import java.util.*;
 
-public class TreeMapPQ implements Comparable<TreeMapPQ> {
+public class MyTreeMap{
 
-    private class MyEntry implements Submission {
+    public static class MyEntry implements Submission {
 
         private String unikey;
         private Date timestamp;
@@ -27,23 +27,15 @@ public class TreeMapPQ implements Comparable<TreeMapPQ> {
         public void setTimestamp(Date timestamp) { this.timestamp = timestamp; }
     }
 
-    private PriorityQueue<Integer> gradeQ;
     private TreeMap<Date, MyEntry> map;
+    private TreeSet<Integer> grades;
+    private HashMap<Integer, Integer> gradeCount;
 
-    public TreeMapPQ() {
+    public MyTreeMap() {
 
-        this.gradeQ = new PriorityQueue<>((x, y) -> y - x);
         this.map = new TreeMap<>();
-    }
-
-    @Override
-    public int compareTo(TreeMapPQ treeMapPQ) {
-        if(this.getBestGrade() > treeMapPQ.getBestGrade())
-            return 1;
-        else if(this.getBestGrade() == treeMapPQ.getBestGrade())
-            return 0;
-        else
-            return -1;
+        this.grades = new TreeSet<>((x, y) -> y - x);
+        this.gradeCount = new HashMap<>();
     }
 
     /**
@@ -54,9 +46,9 @@ public class TreeMapPQ implements Comparable<TreeMapPQ> {
      * @return the best grade by this student, or null if they have made no
      *         submissions
      */
-    private Integer getBestGrade() {
-        if(gradeQ.size() > 0)
-            return gradeQ.peek();
+    protected Integer getBestGrade() {
+        if(grades.size() > 0)
+            return grades.first();
         else
             return 0;
     }
@@ -69,8 +61,10 @@ public class TreeMapPQ implements Comparable<TreeMapPQ> {
      * @return Submission made most recently by that student, or null if the
      *         student has made no submissions
      */
-    private Submission getMostRecentSubmission() {
-        return map.lastEntry().getValue();
+    protected Submission getMostRecentSubmission() {
+        if(map.size() > 0)
+            return map.lastEntry().getValue();
+        return null;
     }
 
     /**
@@ -85,8 +79,14 @@ public class TreeMapPQ implements Comparable<TreeMapPQ> {
      *
      * @throws IllegalArgumentException
      */
-    private Submission getSubmissionPriorToTime(Date deadline) throws IllegalArgumentException{
-           return map.lowerEntry(deadline).getValue();
+    protected Submission getSubmissionPriorToTime(Date deadline) throws IllegalArgumentException{
+        /*for (Map.Entry<Date, MyEntry> mapEntry : map.entrySet()) {
+            System.out.println(mapEntry.getKey() + ", " + mapEntry.getValue().getUnikey() + ", " + mapEntry.getValue().getGrade());
+        }*/
+        Map.Entry<Date, MyEntry> entry = null;
+        if((entry = map.floorEntry(deadline)) != null)
+            return entry.getValue();
+        return null;
     }
 
     /**
@@ -101,10 +101,15 @@ public class TreeMapPQ implements Comparable<TreeMapPQ> {
      * @throws IllegalArgumentException
      *             if any argument is null
      */
-    public void addSubmission(Submission submission) throws IllegalArgumentException {
+    public void addSubmission(Submission submission) {
 
-        if(submission.getGrade() > getBestGrade())
-            gradeQ.offer(submission.getGrade());
+        if(gradeCount.containsKey(submission.getGrade())) {
+            gradeCount.put(submission.getGrade(), gradeCount.get(submission.getGrade()) + 1);
+        }
+        else {
+            gradeCount.put(submission.getGrade(), 1);
+        }
+        grades.add(submission.getGrade());
         map.put(submission.getTime(), (MyEntry) submission);
     }
 
@@ -117,13 +122,18 @@ public class TreeMapPQ implements Comparable<TreeMapPQ> {
      *
      * @throws IllegalArgumentException
      */
-    public void removeSubmission(Submission submission) throws IllegalArgumentException {
+    public boolean removeSubmission(Submission submission) {
         if(map.containsValue(submission)) // Check if the value is contained
         {
-            if(submission.getGrade() == getBestGrade())
-                gradeQ.poll();
-            map.remove(submission);
+            /*System.out.println(gradeCount);
+            System.out.println(grades);*/
+            gradeCount.put(submission.getGrade(), gradeCount.get(submission.getGrade()) - 1);
+            if(submission.getGrade() == getBestGrade() && gradeCount.get(submission.getGrade()) == 0)
+                grades.remove(submission.getGrade());
+            map.remove(submission.getTime());
+            return true;
         }
+        return false;
     }
 
     /**
@@ -133,10 +143,10 @@ public class TreeMapPQ implements Comparable<TreeMapPQ> {
      *
      * @return true if he is in regression
      */
-    public boolean checkRegressionTrue() {
+    /*public boolean checkRegressionTrue() {
         if(getMostRecentSubmission().getGrade() < getBestGrade())
             return true;
         return false;
-    }
+    }*/
 
 }
