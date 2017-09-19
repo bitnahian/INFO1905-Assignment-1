@@ -1,12 +1,6 @@
-import com.sun.org.apache.xpath.internal.SourceTree;
-
 import java.util.*;
 
 public class Assignment implements SubmissionHistory {
-
-    public class BigMap {
-        private TreeMap<TreeSet<Integer>, MyTreeMap> bigMap;
-    }
 
 	private HashMap<String , MyTreeMap> bigMap;
 	private HashMap<String, Integer> bestGrades; // This needs to be sorted
