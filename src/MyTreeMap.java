@@ -27,14 +27,14 @@ public class MyTreeMap{
         public void setTimestamp(Date timestamp) { this.timestamp = timestamp; }
     }
 
-    private TreeMap<Date, MyEntry> map;
-    private TreeSet<Integer> grades;
-    private HashMap<Integer, Integer> gradeCount;
+    private TreeMap<Date, MyEntry> map;             // map sorts the submissions based on date
+    private TreeSet<Integer> grades;                // grades keeps track of best grades
+    private HashMap<Integer, Integer> gradeCount;   // gradeCount keeps track of duplicates of best grades
 
     public MyTreeMap() {
 
         this.map = new TreeMap<>();
-        this.grades = new TreeSet<>((x, y) -> y - x);
+        this.grades = new TreeSet<>((x, y) -> y - x); // Lambda function to reverse ordering of grades
         this.gradeCount = new HashMap<>();
     }
 
@@ -80,13 +80,11 @@ public class MyTreeMap{
      * @throws IllegalArgumentException
      */
     protected Submission getSubmissionPriorToTime(Date deadline) throws IllegalArgumentException{
-        /*for (Map.Entry<Date, MyEntry> mapEntry : map.entrySet()) {
-            System.out.println(mapEntry.getKey() + ", " + mapEntry.getValue().getUnikey() + ", " + mapEntry.getValue().getGrade());
-        }*/
+
         Map.Entry<Date, MyEntry> entry = null;
-        if((entry = map.floorEntry(deadline)) != null)
-            return entry.getValue();
-        return null;
+        if((entry = map.floorEntry(deadline)) != null)  // floorEntry() returns a key-value mapping associated with the
+            return entry.getValue();                    // greatest key less than or equal to the given key, or null if
+        return null;                                    // there is no such key.
     }
 
     /**
@@ -125,9 +123,9 @@ public class MyTreeMap{
     public boolean removeSubmission(Submission submission) {
         if(map.containsValue(submission)) // Check if the value is contained
         {
-            /*System.out.println(gradeCount);
-            System.out.println(grades);*/
+            // Decrease count of grade by 1 for each removal
             gradeCount.put(submission.getGrade(), gradeCount.get(submission.getGrade()) - 1);
+            // Check if count for best grade reaches 0, remove it from TreeSet<Integer> grades
             if(submission.getGrade() == getBestGrade() && gradeCount.get(submission.getGrade()) == 0)
                 grades.remove(submission.getGrade());
             map.remove(submission.getTime());

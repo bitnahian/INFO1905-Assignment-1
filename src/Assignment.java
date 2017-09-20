@@ -2,8 +2,8 @@ import java.util.*;
 
 public class Assignment implements SubmissionHistory {
 
-	private HashMap<String , MyTreeMap> bigMap;
-	private HashMap<String, Integer> bestGrades;
+	private HashMap<String , MyTreeMap> bigMap; // bigMap stores the MyTreeMap for every student
+	private HashMap<String, Integer> bestGrades;// bestGrades to dynamically keep track of a student's top grade
 
 	/**
 	 * Default constructor
