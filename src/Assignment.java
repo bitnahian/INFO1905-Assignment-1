@@ -66,7 +66,7 @@ public class Assignment implements SubmissionHistory {
         if(!(unikey instanceof String) || !(deadline instanceof Date))
             throw new IllegalArgumentException();
         MyTreeMap treeMap = null;
-        if((treeMap = bigMap.get(unikey)) == null)
+        if((treeMap = bigMap.get(unikey)) != null)
 		    return treeMap.getSubmissionPriorToTime(deadline);   // Function returns appropriately
         else
             return null;
