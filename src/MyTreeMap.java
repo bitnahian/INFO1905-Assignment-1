@@ -121,7 +121,7 @@ public class MyTreeMap{
      * @throws IllegalArgumentException
      */
     public boolean removeSubmission(Submission submission) {
-        if(map.containsValue(submission)) // Check if the value is contained
+        if(map.containsKey(submission.getTime())) // Check if the value is contained
         {
             // Decrease count of grade by 1 for each removal
             gradeCount.put(submission.getGrade(), gradeCount.get(submission.getGrade()) - 1);
