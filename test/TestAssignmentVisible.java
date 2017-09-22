@@ -2,10 +2,7 @@ import static org.junit.Assert.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -490,4 +487,240 @@ public class TestAssignmentVisible {
 	 * - edge cases
 	 * **************************************************************** */
 
+	@Test (expected = IllegalArgumentException.class)
+	public void throwsExceptionForGetBestGrade()
+	{
+		SubmissionHistory history = new Assignment();
+		history.add(null , new Date(5000), 100);
+		history.add("abcd", null, 100);
+		history.add("abcd", new Date(1000), null);
+	}
+
+	@Test
+	public void testGetBestGrade()
+	{
+		SubmissionHistory history = new Assignment();
+		assertNull(history.getBestGrade("aaaa1234"));
+
+		// Test after two adds
+		history.add("aaaa1234", new Date(10000), 15);
+		history.add("aaaa1234", new Date(11000), 20);
+		assertEquals(new Integer(20), history.getBestGrade("aaaa1234"));
+
+		// Test after one remove
+		history.remove(new MyTreeMap.MyEntry("aaaa1234", new Date(11000), 20));
+		assertEquals(new Integer(15), history.getBestGrade("aaaa1234"));
+	}
+
+	@Test
+	public void stressTestGetBestGrade()
+	{
+		SubmissionHistory history = new Assignment();
+		// Test after multiple adds -> stress case
+		// Adds grades between 0 and 70
+		history.add("aaaa1234", new Date(50000), 71);
+		for(int i = 0; i < 100; ++i)
+		{
+			history.add("aaaa1234", new Date((int) Math.abs(Math.random() * 10001)),
+					new Integer((int) Math.abs(Math.random() * 71)));
+		}
+		assertEquals(new Integer(71), history.getBestGrade("aaaa1234"));
+	}
+
+	@Test // Test after multiple adds and multiple removals
+	public void testGetBestGradeRemove()
+	{
+		SubmissionHistory history = new Assignment();
+
+		history.add("aaaa1234", new Date(50000), 50);
+		history.add("aaaa1234", new Date(60000), 71);
+		history.add("aaaa1234", new Date(70000), 71);
+		history.add("aaaa1234", new Date(80000), 71);
+		history.add("aaaa1234", new Date(90000), 71);
+		history.add("aaaa1234", new Date(100000), 71);
+
+		// Test if different student ruins test
+		history.add("bbbb1234", new Date(90000), 80);
+		history.add("bbbb1234", new Date(100000), 90);
+
+		history.remove(new MyTreeMap.MyEntry("aaaa1234", new Date(60000), 71));
+		history.remove(new MyTreeMap.MyEntry("aaaa1234", new Date(70000), 71));
+		history.remove(new MyTreeMap.MyEntry("aaaa1234", new Date(80000), 71));
+		history.remove(new MyTreeMap.MyEntry("aaaa1234", new Date(90000), 71));
+
+		assertEquals(new Integer(71), history.getBestGrade("aaaa1234"));
+
+		// Test after removing last highest score
+		history.remove(new MyTreeMap.MyEntry("aaaa1234", new Date(100000), 71));
+
+		assertEquals(new Integer(50), history.getBestGrade("aaaa1234"));
+	}
+
+    @Test (expected = IllegalArgumentException.class)
+    public void throwsExceptionForGetSubmissionFinal()
+    {
+        SubmissionHistory history = new Assignment();
+        history.getSubmissionFinal(null);
+    }
+
+    @Test // Tests after multiple adds and removals
+    public void GetSubmissionFinalAfterMultipleAddRemove()
+    {
+        SubmissionHistory history = new Assignment();
+
+        history.add("aaaa1234", new Date(50000), 50);
+        history.add("aaaa1234", new Date(60000), 71);
+        history.add("aaaa1234", new Date(70000), 71);
+        Submission aLast = history.add("aaaa1234", new Date(80000), 71);
+        Submission a = history.add("aaaa1234", new Date(90000), 71);
+        Submission a1 = history.add("aaaa1234", new Date(100000), 71);
+
+        history.add("bbbb1234", new Date(51000), 50);
+        history.add("bbbb1234", new Date(61000), 71);
+        history.add("bbbb1234", new Date(71000), 71);
+        Submission bLast = history.add("bbbb1234", new Date(81000), 71);
+        Submission b = history.add("bbbb1234", new Date(91000), 71);
+        Submission b1 = history.add("bbbb1234", new Date(110000), 71);
+
+
+        assertEquals(history.getSubmissionFinal("aaaa1234"), a1);
+        assertEquals(history.getSubmissionFinal("bbbb1234"), b1);
+
+        history.remove(a);
+        history.remove(a1);
+        history.remove(b);
+        history.remove(b1);
+
+        assertEquals(history.getSubmissionFinal("aaaa1234"), aLast);
+        assertEquals(history.getSubmissionFinal("bbbb1234"), bLast);
+    }
+
+    @Test // Tests after multiple adds and removals
+    public void StressTestGetSubmissionFinal() {
+        SubmissionHistory history = new Assignment();
+
+        Submission a1 = history.add("aaaa1234", new Date(20000), 100);
+        for(int i = 0; i < 100; ++i)
+        {
+            history.add("aaaa1234", new Date((int) Math.abs(Math.random() * 10001)),
+                    new Integer((int) Math.abs(Math.random() * 71)));
+        }
+
+        assertEquals(a1, history.getSubmissionFinal("aaaa1234"));
+    }
+
+    @Test (expected = IllegalArgumentException.class)
+    public void throwsExceptionForGetSubmissionBefore()
+    {
+        SubmissionHistory history = new Assignment();
+        history.getSubmissionBefore(null, new Date(10));
+        history.getSubmissionBefore("aaaa1235", null);
+    }
+
+    @Test
+    public void GetSubmissionBeforeAfterMultipleAddRemove()
+    {
+        SubmissionHistory history = new Assignment();
+
+        history.add("aaaa1234", new Date(50000), 50);
+        history.add("aaaa1234", new Date(60000), 71);
+        history.add("aaaa1234", new Date(70000), 71);
+        Submission aLast = history.add("aaaa1234", new Date(80000), 71);
+        Submission a = history.add("aaaa1234", new Date(90000), 71);
+        Submission a1 = history.add("aaaa1234", new Date(100000), 71);
+
+        history.add("bbbb1234", new Date(51000), 50);
+        history.add("bbbb1234", new Date(61000), 71);
+        history.add("bbbb1234", new Date(71000), 71);
+        Submission bLast = history.add("bbbb1234", new Date(81000), 71);
+        Submission b = history.add("bbbb1234", new Date(91000), 71);
+        Submission b1 = history.add("bbbb1234", new Date(110000), 71);
+
+        assertEquals(a, history.getSubmissionBefore("aaaa1234", new Date(95000)));
+        assertEquals(b, history.getSubmissionBefore("bbbb1234", new Date(95000)));
+
+        history.remove(a);
+        history.remove(b);
+
+        // Test after removing previous getSubmissionBefore()
+        assertEquals(aLast, history.getSubmissionBefore("aaaa1234", new Date(95000)));
+        assertEquals(bLast, history.getSubmissionBefore("bbbb1234", new Date(95000)));
+    }
+
+    @Test // Test for empty SubmissionHistory
+    public void EmptyForListTopStudents()
+    {
+        SubmissionHistory history = new Assignment();
+        assertEquals(history.listTopStudents(), new ArrayList<>());
+    }
+
+    @Test // Test for empty SubmissionHistory
+    public void EmptyForListRegressions()
+    {
+        SubmissionHistory history = new Assignment();
+        assertEquals(history.listRegressions(), new ArrayList<>());
+    }
+
+    @Test // Test after multiple adds and removals
+    public void listTopStudentsAfterMultipleAddsAndRemovals()
+    {
+        SubmissionHistory history = new Assignment();
+
+        Submission a = history.add("aaaa1234", new Date(10000), 100);
+        Submission b = history.add("bbbb1234", new Date(10000), 100);
+        Submission c = history.add("cccc1234", new Date(10000), 100);
+        Submission d = history.add("dddd1234", new Date(10000), 100);
+
+        ArrayList<String> list = new ArrayList<String>();
+        list.add(a.getUnikey());
+        list.add(b.getUnikey());
+        list.add(c.getUnikey());
+        list.add(d.getUnikey());
+
+        assertEquals(list, history.listTopStudents());
+
+        history.remove(a);
+        list.remove(a.getUnikey());
+
+        assertEquals(list, history.listTopStudents());
+
+        a = history.add("eeee1234", new Date(10000), 101);
+        list.clear();
+        list.add(a.getUnikey());
+
+        assertEquals(list, history.listTopStudents());
+    }
+
+    @Test // Test listRegression after multiple additions and removals
+    public void testListRegression()
+    {
+        SubmissionHistory history = new Assignment();
+
+        Submission a = history.add("aaaa1234", new Date(10000), 100);
+        Submission b = history.add("bbbb1234", new Date(10000), 100);
+        Submission c = history.add("cccc1234", new Date(10000), 100);
+        Submission d = history.add("dddd1234", new Date(10000), 100);
+
+        Submission a1 = history.add("aaaa1234", new Date(10000), 50);
+
+        ArrayList<String> list = new ArrayList<>();
+        list.add(a.getUnikey());
+
+        assertEquals(list, history.listRegressions());
+
+        history.remove(a1);
+        list.clear();
+        // Test when no one has regression
+        assertEquals(list, history.listRegressions());
+
+        c = history.add("cccc1234", new Date(10000), 50);
+        b = history.add("bbbb1234", new Date(10000), 50);
+
+        list.add(c.getUnikey());
+        list.add(b.getUnikey());
+
+        assertEquals(list, history.listRegressions());
+
+
+    }
 }
